@@ -1,6 +1,7 @@
 
 body {
 	background: linear-gradient(to bottom, rgba(204,204,204,1) 0%,rgba(255,255,255,1) 10%,rgba(255,255,255,1) 90%,rgba(204,204,204,1) 100%);
+	font-size: 16px;
 }
 
 .input-area {
@@ -19,4 +20,21 @@ body {
 
 .avatar {
 	width: 160px;
+}
+
+.avatarFollower {
+	width: 60px;
+	margin: 0 10px 0 0;
+}
+
+ul {
+	list-style-type: none;
+}
+
+.followerList > li {
+	margin: 20px 0 0;
+}
+
+.repositoryList > li {
+	margin: 10px 0 0;
 }
