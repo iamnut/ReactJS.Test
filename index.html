@@ -46,6 +46,13 @@ var MainUI = React.createClass({
 		};
 	},
 
+	handleClickUser: function(username){
+		console.log('You clicked: ' + username);
+		this.setState({ 
+			username: username,
+		});
+	},
+
 	handleClickOK: function(){
 		this.setState({ 
 			username: $('#githubUsername').val(),
@@ -53,6 +60,8 @@ var MainUI = React.createClass({
 	},
 
 	render: function(){
+		var buff = GetFromAPI(this.state.username);
+
 		return 	<div>
 					<div className="container input-area">
 						<div className="row">
@@ -65,49 +74,42 @@ var MainUI = React.createClass({
 						</div>
 					</div>
 					<div className="container info-area">
-						<Information username={this.state.username}/>
+						<div className="row">
+							<div className="col-md-2">
+								<img className="avatar" src={buff.info.avatar_url}/>
+							</div>
+							<div className="col-md-10">
+								<h3>{buff.info.name}</h3>
+								<strong>BIO:</strong>
+								<p>{buff.info.bio}</p>
+							</div>
+
+							<div className="col-md-4">
+								<strong>Followers</strong>
+								<ul className="followerList">
+								{
+									buff.follower.map(function(item){
+										return <li><img className="avatarFollower" src={item.avatar_url}/><a href="#" onClick={this.handleClickUser.bind(this, item.login)}>{item.login}</a></li>;
+									}, this)
+								}
+								</ul>
+							</div>
+							<div className="col-md-4">
+								<strong>Repository</strong>
+								<ul className="repositoryList">
+								{
+									buff.repo.map(function(item){
+										return <li>{item.name}</li>;
+									}, this)
+								}
+								</ul>
+							</div>
+						</div>
 					</div>
 				</div>;
 	}
 });
 
-var Information = React.createClass({
-	render: function(){
-		var buff = GetFromAPI(this.props.username);
-
-		return 	<div className="row">
-					<div className="col-md-2">
-						<img className="avatar" src={buff.info.avatar_url}/>
-					</div>
-					<div className="col-md-10">
-						<h3>{buff.info.name}</h3>
-						<strong>BIO:</strong>
-						<p>{buff.info.bio}</p>
-					</div>
-
-					<div className="col-md-4">
-						<strong>Followers</strong>
-						<ul className="followerList">
-						{
-							buff.follower.map(function(item){
-								return <li><img className="avatarFollower" src={item.avatar_url}/>{item.login}</li>;
-							}, this)
-						}
-						</ul>
-					</div>
-					<div className="col-md-4">
-						<strong>Repository</strong>
-						<ul className="repositoryList">
-						{
-							buff.repo.map(function(item){
-								return <li>{item.name}</li>;
-							}, this)
-						}
-						</ul>
-					</div>
-				</div>;
-	}
-});
 
 React.render(<MainUI/>, document.body);
 </script>
