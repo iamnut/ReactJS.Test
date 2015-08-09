@@ -86,18 +86,18 @@ var Information = React.createClass({
 					</div>
 
 					<div className="col-md-4">
-						<strong>Follower</strong>
-						<ul>
+						<strong>Followers</strong>
+						<ul className="followerList">
 						{
 							buff.follower.map(function(item){
-								return <li>{item.login}</li>;
+								return <li><img className="avatarFollower" src={item.avatar_url}/>{item.login}</li>;
 							}, this)
 						}
 						</ul>
 					</div>
 					<div className="col-md-4">
 						<strong>Repository</strong>
-						<ul>
+						<ul className="repositoryList">
 						{
 							buff.repo.map(function(item){
 								return <li>{item.name}</li>;
