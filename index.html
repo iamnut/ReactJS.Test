@@ -1,0 +1,119 @@
+<html>
+<head>
+
+<meta charset="utf-8">
+<title>ReactJS - Get Information from github</title>
+
+<script src="js/react.min.js"></script>
+<script src="js/JSXTransformer.js"></script>
+<script src="js/jquery.min.js"></script>
+
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/style.css">
+
+<script type="text/javascript">
+$.ajaxSetup({async:false});
+
+var GetFromAPI = function(username){
+	var info, follower, repo;
+
+	$.get('https://api.github.com/users/' + username, function(res){
+		info = res;
+	});
+
+	$.get('https://api.github.com/users/' + username + '/followers', function(res){
+		follower = res;
+	});
+
+	$.get('https://api.github.com/users/' + username + '/repos', function(res){
+		repo = res;
+	});
+
+	return { 
+		info: info, 
+		follower: follower, 
+		repo, repo
+	};
+};
+</script>
+
+<script type="text/jsx">
+
+var MainUI = React.createClass({
+	getInitialState: function(){
+		return {
+			username: 'facebook'
+		};
+	},
+
+	handleClickOK: function(){
+		this.setState({ 
+			username: document.getElementById('githubUsername').value,
+		});
+	},
+
+	render: function(){
+		return 	<div>
+					<div className="container input-area">
+						<div className="row">
+							<div className="col-md-10">
+								<input type="text" id="githubUsername" className="form-control"/>
+							</div>
+							<div id="input" className="col-md-2">
+								<button onClick={this.handleClickOK} className={('btn btn-primary btn-block')}>OK</button>
+							</div>
+						</div>
+					</div>
+					<div className="container info-area">
+						<Information username={this.state.username}/>
+					</div>
+				</div>;
+	}
+});
+
+var Information = React.createClass({
+	render: function(){
+		var buff = GetFromAPI(this.props.username);
+
+		return 	<div className="row">
+					<div className="col-md-2">
+						<img className="avatar" src={buff.info.avatar_url}/>
+					</div>
+					<div className="col-md-10">
+						<h3>{buff.info.name}</h3>
+						<strong>BIO:</strong>
+						<p>{buff.info.bio}</p>
+					</div>
+
+					<div className="col-md-4">
+						<strong>Follower</strong>
+						<ul>
+						{
+							buff.follower.map(function(item){
+								return <li>{item.login}</li>;
+							}, this)
+						}
+						</ul>
+					</div>
+					<div className="col-md-4">
+						<strong>Repository</strong>
+						<ul>
+						{
+							buff.repo.map(function(item){
+								return <li>{item.name}</li>;
+							}, this)
+						}
+						</ul>
+					</div>
+				</div>;
+	}
+});
+
+React.render(<MainUI/>, document.body);
+</script>
+
+</head>
+<body>
+
+</body>
+</html>
