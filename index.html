@@ -48,17 +48,17 @@ var MainUI = React.createClass({
 		};
 	},
 
-	handleClickUser: function(username){
+	handleClickOK: function(){
+		this.setState({ 
+			username: React.findDOMNode(this.refs.username).value.trim(),
+		});
+	},
+
+	handleUserClickFollowerList: function(username){
 		console.log('You clicked: ' + username);
 		React.findDOMNode(this.refs.username).value = username;
 		this.setState({ 
 			username: username,
-		});
-	},
-
-	handleClickOK: function(){
-		this.setState({ 
-			username: React.findDOMNode(this.refs.username).value.trim(),
 		});
 	},
 
@@ -87,16 +87,8 @@ var MainUI = React.createClass({
 								<p>{buff.info.bio}</p>
 							</div>
 
-							<div className="col-md-4">
-								<strong>Followers</strong>
-								<ul className="followerList">
-								{
-									buff.follower.map(function(item){
-										return <li><img className="avatarFollower" src={item.avatar_url}/><a href="#" onClick={this.handleClickUser.bind(this, item.login)}>{item.login}</a></li>;
-									}, this)
-								}
-								</ul>
-							</div>
+							<FollowerList onUserClick={this.handleUserClickFollowerList} followerList={buff.follower}/>
+							
 							<div className="col-md-4">
 								<strong>Repository</strong>
 								<ul className="repositoryList">
@@ -109,6 +101,28 @@ var MainUI = React.createClass({
 							</div>
 						</div>
 					</div>
+				</div>;
+	}
+});
+
+var FollowerList = React.createClass({
+	handleClick: function(username){
+		this.props.onUserClick(username);
+	},
+
+	render: function(){
+		return 	<div className="col-md-4">
+					<strong>Followers</strong>
+					<ul className="followerList">
+					{
+						this.props.followerList.map(function(item){
+						return 	<li>
+									<img className="avatarFollower" src={item.avatar_url}/>
+									<a href="#" onClick={this.handleClick.bind(this, item.login)}>{item.login}</a>
+								</li>;
+						}, this)
+					}
+					</ul>
 				</div>;
 	}
 });
