@@ -11,34 +11,6 @@
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/style.css">
 
-<script type="text/javascript">
-$.ajaxSetup({
-	async:false
-});
-
-var GetFromAPI = function(username){
-	var info, follower, repo;
-
-	$.get('https://api.github.com/users/' + username, function(res){
-		info = res;
-	});
-
-	$.get('https://api.github.com/users/' + username + '/followers', function(res){
-		follower = res;
-	});
-
-	$.get('https://api.github.com/users/' + username + '/repos', function(res){
-		repo = res;
-	});
-
-	return { 
-		info: info, 
-		follower: follower, 
-		repo, repo
-	};
-};
-</script>
-
 <script type="text/jsx">
 
 var MainUI = React.createClass({
@@ -63,8 +35,6 @@ var MainUI = React.createClass({
 	},
 
 	render: function(){
-		var buff = GetFromAPI(this.state.username);
-
 		return 	<div>
 					<div className="container input-area">
 						<div className="row">
@@ -77,10 +47,10 @@ var MainUI = React.createClass({
 						</div>
 					</div>
 					<div className="container info-area">
-						<Profile profile={buff.info}/>
+						<Profile username={this.state.username}/>
 						<div className="row">
-							<FollowerList onUserClick={this.handleUserClickFollowerList} followerList={buff.follower}/>
-							<RepositoryList repositoryList={buff.repo}/>
+							<FollowerList onUserClick={this.handleUserClickFollowerList} username={this.state.username}/>
+							<RepositoryList username={this.state.username}/>
 						</div>
 					</div>
 				</div>;
@@ -88,21 +58,69 @@ var MainUI = React.createClass({
 });
 
 var Profile = React.createClass({
+	getInitialState: function(){
+		return {
+			infomation: {}
+		};
+	},
+
+	loadProfile: function(){
+		$.get('https://api.github.com/users/' + this.props.username, function(result) {
+			if (this.isMounted()) {
+				this.setState({
+					infomation: result
+				});
+			}
+		}.bind(this));
+	},
+
+	componentDidMount: function(){
+		this.loadProfile();
+	},
+
+	componentWillUpdate: function(){
+		this.loadProfile();
+	},
+
 	render: function(){
 		return 	<div className="row">
 					<div className="col-md-2">
-						<img className="avatar" src={this.props.profile.avatar_url}/>
+						<img className="avatar" src={this.state.infomation.avatar_url}/>
 					</div>
 					<div className="col-md-10">
-						<h3>{this.props.profile.name}</h3>
+						<h3>{this.state.infomation.name}</h3>
 						<strong>BIO:</strong>
-						<p>{this.props.profile.bio}</p>
+						<p>{this.state.infomation.bio}</p>
 					</div>
 				</div>;
 	}
 });
 
 var FollowerList = React.createClass({
+	getInitialState: function(){
+		return {
+			followerList: []
+		};
+	},
+
+	loadFollowerList: function(){
+		$.get('https://api.github.com/users/' + this.props.username + '/followers', function(result) {
+			if (this.isMounted()) {
+				this.setState({
+					followerList: result
+				});
+			}
+		}.bind(this));
+	},
+
+	componentDidMount: function(){
+		this.loadFollowerList();
+	},
+
+	componentWillUpdate: function(){
+		this.loadFollowerList();
+	},
+
 	handleClick: function(username){
 		this.props.onUserClick(username);
 	},
@@ -112,7 +130,7 @@ var FollowerList = React.createClass({
 					<strong>Followers</strong>
 					<ul className="followerList">
 					{
-						this.props.followerList.map(function(item){
+						this.state.followerList.map(function(item){
 						return 	<li>
 									<img className="avatarFollower" src={item.avatar_url}/>
 									<a href="#" onClick={this.handleClick.bind(this, item.login)}>{item.login}</a>
@@ -125,12 +143,36 @@ var FollowerList = React.createClass({
 });
 
 var RepositoryList = React.createClass({
+	getInitialState: function(){
+		return {
+			repositoryList: []
+		};
+	},
+
+	loadRepositoryList: function(){
+		$.get('https://api.github.com/users/' + this.props.username + '/repos', function(result) {
+			if (this.isMounted()) {
+				this.setState({
+					repositoryList: result
+				});
+			}
+		}.bind(this));
+	},
+
+	componentDidMount: function(){
+		this.loadRepositoryList();
+	},
+
+	componentWillUpdate: function(){
+		this.loadRepositoryList();
+	},
+
 	render: function(){
 		return	<div className="col-md-4">
 					<strong>Repository</strong>
 					<ul className="repositoryList">
 					{
-						this.props.repositoryList.map(function(item){
+						this.state.repositoryList.map(function(item){
 							return <li>{item.name}</li>;
 						}, this)
 					}
