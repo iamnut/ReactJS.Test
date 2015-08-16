@@ -12,7 +12,9 @@
 <link rel="stylesheet" href="css/style.css">
 
 <script type="text/javascript">
-$.ajaxSetup({async:false});
+$.ajaxSetup({
+	async:false
+});
 
 var GetFromAPI = function(username){
 	var info, follower, repo;
@@ -48,6 +50,7 @@ var MainUI = React.createClass({
 
 	handleClickUser: function(username){
 		console.log('You clicked: ' + username);
+		React.findDOMNode(this.refs.username).value = username;
 		this.setState({ 
 			username: username,
 		});
@@ -55,7 +58,7 @@ var MainUI = React.createClass({
 
 	handleClickOK: function(){
 		this.setState({ 
-			username: $('#githubUsername').val(),
+			username: React.findDOMNode(this.refs.username).value.trim(),
 		});
 	},
 
@@ -66,7 +69,7 @@ var MainUI = React.createClass({
 					<div className="container input-area">
 						<div className="row">
 							<div className="col-md-10">
-								<input type="text" id="githubUsername" className="form-control"/>
+								<input type="text" id="githubUsername" className="form-control" ref="username"/>
 							</div>
 							<div id="input" className="col-md-2">
 								<button onClick={this.handleClickOK} className={('btn btn-primary btn-block')}>OK</button>
@@ -109,7 +112,6 @@ var MainUI = React.createClass({
 				</div>;
 	}
 });
-
 
 React.render(<MainUI/>, document.body);
 </script>
